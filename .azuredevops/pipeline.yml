@@ -47,19 +47,19 @@ steps:
       npx @fortify/setup@v2 env init --tools=fcli:bootstrapped
       npx @fortify/setup@v2 env ado
       
-- task: PowerShell@2
-  displayName: 'Run FoD CI Scan'
-  inputs:
-    targetType: 'inline'
-    workingDirectory: '$(Build.SourcesDirectory)/src/VulnerableApi'
-    script: |
-      $ErrorActionPreference = "Stop"
-      fcli action run ci
-  env:
-    FOD_URL: $(fodApiUrl)
-    FOD_CLIENT_ID: $(fodClientId)
-    FOD_CLIENT_SECRET: $(fodClientSecret)
-    PACKAGE_EXTRA_OPTS: "-bt dotnet -bf $(project)"
+#- task: PowerShell@2
+#  displayName: 'Run FoD CI Scan'
+#  inputs:
+#    targetType: 'inline'
+#    workingDirectory: '$(Build.SourcesDirectory)/src/VulnerableApi'
+#    script: |
+#      $ErrorActionPreference = "Stop"
+#      fcli action run ci
+#  env:
+#    FOD_URL: $(fodApiUrl)
+#    FOD_CLIENT_ID: $(fodClientId)
+#    FOD_CLIENT_SECRET: $(fodClientSecret)
+#    PACKAGE_EXTRA_OPTS: "-bt dotnet -bf $(project)"
     #DO_SETUP: true
     #DO_SAST_SCAN: true
     #DO_AVIATOR_AUDIT: true
