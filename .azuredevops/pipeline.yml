@@ -1,0 +1,72 @@
+trigger:
+- main
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  buildConfiguration: Release
+  solution: FoD-ADO-Demo.sln
+  project: VulnerableApi.csproj
+  fodApiUrl: https://api.emea.fortify.com
+  fodClientId: $(FOD_CLIENT_ID)
+  fodClientSecret: $(FOD_CLIENT_SECRET)
+
+steps:
+- task: UseDotNet@2
+  displayName: Use .NET 9 SDK
+  inputs:
+    packageType: sdk
+    version: 9.x
+
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: $(solution)
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: build
+    projects: $(solution)
+    arguments: --configuration $(buildConfiguration) --no-restore
+
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: tests/VulnerableApi.Tests/VulnerableApi.Tests.csproj
+    arguments: --configuration $(buildConfiguration) --no-build --logger trx
+
+- task: PowerShell@2
+  displayName: 'Install Fortify CLI via @fortify/setup'
+  inputs:
+    targetType: 'inline'
+    script: |
+      npx @fortify/setup@v2 env init --tools=fcli:bootstrapped
+      npx @fortify/setup@v2 env ado
+      
+- task: PowerShell@2
+  displayName: 'Run FoD CI Scan'
+  inputs:
+    targetType: 'inline'
+    workingDirectory: '$(Build.SourcesDirectory)/src/VulnerableApi'
+    script: |
+      $ErrorActionPreference = "Stop"
+      fcli action run ci
+  env:
+    FOD_URL: $(fodApiUrl)
+    FOD_CLIENT_ID: $(fodClientId)
+    FOD_CLIENT_SECRET: $(fodClientSecret)
+    PACKAGE_EXTRA_OPTS: "-bt dotnet -bf $(project)"
+    #DO_SETUP: true
+    #DO_SAST_SCAN: true
+    #DO_AVIATOR_AUDIT: true
+    #DO_SCA_SCAN: true
+    #DO_WAIT: true
+    #SAST_WAIT_EXTRA_OPTS: --timeout 2h
+    #DO_POLICY_CHECK: true
+    #DO_JOB_SUMMARY: true
+    #DO_PR_COMMENT: true
+    #DO_EXPORT: true
