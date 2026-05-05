@@ -2,7 +2,10 @@ trigger:
 - main
 
 pool:
-  vmImage: windows-latest
+  # To use a Microsoft-hosted agent, uncomment the following line and comment out the 'vmImage' line
+  #vmImage: windows-latest
+  # To use a self-hosted agent, uncomment the following line and set the agent pool name, then comment out the 'vmImage' line
+  name: 'Default'
 
 variables:
   buildConfiguration: Release
