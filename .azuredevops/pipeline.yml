@@ -11,9 +11,9 @@ variables:
   buildConfiguration: Release
   solution: FoD-ADO-Demo.sln
   project: VulnerableApi.csproj
-  fodApiUrl: https://api.emea.fortify.com
-  fodClientId: $(FOD_CLIENT_ID)
-  fodClientSecret: $(FOD_CLIENT_SECRET)
+  FOD_URL: "https://api.emea.fortify.com"
+  FOD_CLIENT_ID: "YOUR_CLIENT_ID"
+  FOD_CLIENT_SECRET: "YOUR_CLIENT_SECRET"
 
 steps:
 - task: UseDotNet@2
@@ -42,13 +42,13 @@ steps:
     projects: tests/VulnerableApi.Tests/VulnerableApi.Tests.csproj
     arguments: --configuration $(buildConfiguration) --no-build --logger trx
 
-- task: PowerShell@2
-  displayName: 'Install Fortify CLI via @fortify/setup'
-  inputs:
-    targetType: 'inline'
-    script: |
-      npx @fortify/setup@v2 env init --tools=fcli:bootstrapped
-      npx @fortify/setup@v2 env ado
+#- task: PowerShell@2
+#  displayName: 'Install Fortify CLI via @fortify/setup'
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      npx @fortify/setup@v2 env init --tools=fcli:bootstrapped
+#      npx @fortify/setup@v2 env ado
       
 #- task: PowerShell@2
 #  displayName: 'Run FoD CI Scan'
@@ -59,10 +59,7 @@ steps:
 #      $ErrorActionPreference = "Stop"
 #      fcli action run ci
 #  env:
-#    FOD_URL: $(fodApiUrl)
-#    FOD_CLIENT_ID: $(fodClientId)
-#    FOD_CLIENT_SECRET: $(fodClientSecret)
-#    PACKAGE_EXTRA_OPTS: "-bt dotnet -bf $(project)"
+    #PACKAGE_EXTRA_OPTS: "-bt dotnet -bf $(project)"
     #DO_SETUP: true
     #DO_SAST_SCAN: true
     #DO_AVIATOR_AUDIT: true
