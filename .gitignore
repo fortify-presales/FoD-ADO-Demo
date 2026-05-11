@@ -8,3 +8,4 @@ obj/
 TestResults/
 .vscode/
 src/VulnerableApi/vulnerable-demo.db
+.fortify
