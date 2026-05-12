@@ -1,42 +1,47 @@
 trigger:
 - main
+- develop
+- feature/*
+- hotfix/*
 
-pool:
-  # To use a Microsoft-hosted agent, uncomment the following line and comment out the 'vmImage' line
-  #vmImage: windows-latest
-  # To use a self-hosted agent, uncomment the following line and set the agent pool name, then comment out the 'vmImage' line
-  name: 'Default'
+jobs:
+- job: BuildTest
+  displayName: Build and Test
 
-variables:
-  buildConfiguration: Release
-  solution: FoD-ADO-Demo.sln
-  project: VulnerableApi.csproj
-  FOD_URL: "https://api.emea.fortify.com"
-  FOD_RELEASE: "FOD-ADO-Demo:$(Build.SourceBranchName)"
+  pool:
+    # To use a Microsoft-hosted agent, uncomment the following line and comment out the 'vmImage' line
+    #vmImage: windows-latest
+    # To use a self-hosted agent, uncomment the following line and set the agent pool name, then comment out the 'vmImage' line
+    name: 'Default'
 
-steps:
-- task: UseDotNet@2
-  displayName: Use .NET 9 SDK
-  inputs:
-    packageType: sdk
-    version: 9.x
+  variables:
+    buildConfiguration: Debug
+    solution: FoD-ADO-Demo.sln
+    project: VulnerableApi.csproj
 
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-    projects: $(solution)
+  steps:
+  - task: UseDotNet@2
+    displayName: Use .NET 9 SDK
+    inputs:
+      packageType: sdk
+      version: 9.x
 
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    command: build
-    projects: $(solution)
-    arguments: --configuration $(buildConfiguration) --no-restore
+  - task: DotNetCoreCLI@2
+    displayName: Restore
+    inputs:
+      command: restore
+      projects: $(solution)
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: tests/VulnerableApi.Tests/VulnerableApi.Tests.csproj
-    arguments: --configuration $(buildConfiguration) --no-build --logger trx
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      command: build
+      projects: $(solution)
+      arguments: --configuration $(buildConfiguration) --no-restore
+
+  - task: DotNetCoreCLI@2
+    displayName: Test
+    inputs:
+      command: test
+      projects: tests/VulnerableApi.Tests/VulnerableApi.Tests.csproj
+      arguments: --configuration $(buildConfiguration) --no-build --logger trx
